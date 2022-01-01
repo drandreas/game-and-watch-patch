@@ -245,6 +245,29 @@ class MarioGnW(Device, name="mario"):
         tileset_index = bytes_to_tilemap(tileset_bytes)
         tileset_index.save(build_dir / "tileset_index.png")
 
+        # Improve Flash support
+        self.internal.bl(0x000061a4, "flash_init")
+        self.internal.bl(0x00006378, "flash_init")
+
+        self.internal.bl(0x00007422, "flash_cmd")
+        self.internal.bl(0x0000749a, "flash_cmd")
+        self.internal.bl(0x0000751a, "flash_cmd")
+        self.internal.bl(0x0000759c, "flash_cmd")
+        self.internal.bl(0x00007604, "flash_cmd")
+        self.internal.bl(0x00007684, "flash_cmd")
+        self.internal.b(0x00007762, "flash_cmd")
+        self.internal.b(0x000077d0, "flash_cmd")
+        self.internal.bl(0x00007852, "flash_cmd")
+        self.internal.bl(0x00007888, "flash_cmd")
+
+        self.internal.bl(0x00004f98, "flash_read_reg")
+        self.internal.bl(0x00004ff6, "flash_read_reg")
+
+        self.internal.bl(0x00004fd8, "flash_write_reg")
+
+        self.internal.bl(0x00004828, "flash_reset")
+        self.internal.bl(0x00010602, "flash_reset")
+
         # Override tileset
         if self.args.clock_tileset:
             with Image.open(self.args.clock_tileset) as tileset:

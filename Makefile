@@ -17,6 +17,7 @@ BUILD_DIR = build
 C_SOURCES =  \
 Core/Src/ips.c \
 Core/Src/main.c \
+Core/Src/flash.c \
 Core/lzma/LzmaDec.c \
 
 # ASM sources
@@ -164,6 +165,11 @@ LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BU
 		  -Wl,--undefined=prepare_clock_rom \
 		  -Wl,--undefined=read_buttons \
 		  -Wl,--undefined=rwdata_inflate \
+		  -Wl,--undefined=flash_init \
+		  -Wl,--undefined=flash_cmd \
+		  -Wl,--undefined=flash_read_reg \
+		  -Wl,--undefined=flash_write_reg \
+		  -Wl,--undefined=flash_reset \
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin $(BUILD_DIR)/internal_flash_patched.bin
