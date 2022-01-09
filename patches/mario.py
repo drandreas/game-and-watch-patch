@@ -255,8 +255,8 @@ class MarioGnW(Device, name="mario"):
         self.internal.bl(0x0000759c, "flash_cmd")
         self.internal.bl(0x00007604, "flash_cmd")
         self.internal.bl(0x00007684, "flash_cmd")
-        self.internal.b(0x00007762, "flash_cmd")
-        self.internal.b(0x000077d0, "flash_cmd")
+        self.internal.bw(0x00007762, "flash_cmd")
+        self.internal.bw(0x000077d0, "flash_cmd")
         self.internal.bl(0x00007852, "flash_cmd")
         self.internal.bl(0x00007888, "flash_cmd")
 

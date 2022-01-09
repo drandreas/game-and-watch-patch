@@ -99,6 +99,48 @@ class FirmwarePatchMixin:
 
         return 2
 
+    def bw(self, offset: int, data) -> int:
+        """Replace a branch-link statement to a branch to one of our functions
+
+        4 byte command.
+        """
+
+        if isinstance(data, str):
+            dst_address = self.address(data)
+        else:
+            dst_address = self.FLASH_BASE + data
+
+        pc = self.FLASH_BASE + offset + 4
+
+        jump = dst_address - pc
+
+        if abs(jump) > (16 * (1 << 20)):
+            # Max +-16MB jump
+            raise ValueError(f"Too large of a jump {jump} specified.")
+
+        # Where H=0
+        offset_stage_1 = jump >> 12
+        offset_stage_1 = twos_compliment(offset_stage_1, 11)
+
+        stage_1_byte_0 = 0b1111_0000 | ((offset_stage_1 >> 8) & 0x7)
+        stage_1_byte_1 = offset_stage_1 & 0xFF
+
+        # Where H=1
+        offset_stage_2 = (jump - (offset_stage_1 << 12)) >> 1
+        if offset_stage_2 >> 11:
+            raise ValueError(f"bl jump 0x{jump:08X} too large!")
+
+        stage_2_byte_0 = 0b1011_1000 | ((offset_stage_2 >> 8) & 0x7)
+        stage_2_byte_1 = offset_stage_2 & 0xFF
+
+        # Store the instructions in little endian order
+        self[offset + 0] = stage_1_byte_1
+        self[offset + 1] = stage_1_byte_0
+        self[offset + 2] = stage_2_byte_1
+        self[offset + 3] = stage_2_byte_0
+
+        return 4
+
     def bl(self, offset: int, data) -> int:
         """Replace a branch-link statement to a branch to one of our functions
 
